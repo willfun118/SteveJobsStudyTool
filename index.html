@@ -61,7 +61,6 @@
             border-collapse: collapse;
         }
 
-        /* 電腦版表格標頭 */
         thead th {
             text-align: left;
             padding: 15px;
@@ -70,7 +69,6 @@
             font-weight: 600;
             font-size: 13px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
         td {
@@ -79,23 +77,58 @@
             vertical-align: top;
         }
 
+        /* 章節名稱與切換按鈕容器 */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 140px;
+        }
+
         .section-name {
             font-weight: 600;
-            width: 120px;
             color: var(--apple-blue);
             font-size: 14px;
         }
 
+        /* 隱藏/顯示按鈕樣式 */
+        .toggle-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            color: #86868b;
+        }
+
+        .toggle-btn:hover {
+            background: var(--apple-grey);
+            color: var(--apple-blue);
+        }
+
+        /* 文字片段樣式 */
         .text-segment {
             font-size: 16px;
             color: var(--apple-text);
             padding-right: 20px;
+            transition: filter 0.3s ease, opacity 0.3s ease;
+        }
+
+        /* 隱藏狀態：使用模糊效果 (Apple 風格) */
+        .text-segment.hidden {
+            filter: blur(8px);
+            opacity: 0.3;
+            user-select: none;
+            pointer-events: none;
         }
 
         audio {
             height: 36px;
             width: 200px;
-            border-radius: 18px;
         }
 
         .recall-buttons {
@@ -116,58 +149,23 @@
             cursor: pointer;
             font-size: 13px;
             font-weight: 500;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .recall-btn:hover {
-            background: var(--apple-grey);
-            transform: translateY(-1px);
+            transition: all 0.2s;
         }
 
         .recall-btn.active {
             background: var(--apple-blue);
             color: white;
             border-color: var(--apple-blue);
-            box-shadow: 0 4px 10px rgba(0, 113, 227, 0.3);
-        }
-
-        .status-text {
-            font-size: 12px;
-            color: #86868b;
-            font-weight: 500;
         }
 
         tr.mastered {
             background-color: var(--success-green) !important;
         }
 
-        tr:hover {
-            background-color: #fafafa;
-        }
-
-        /* --- 響應式優化關鍵 (RWD) --- */
+        /* 手機版優化 */
         @media (max-width: 850px) {
-            body {
-                padding: 15px 10px;
-            }
-
-            .container {
-                padding: 25px 15px;
-                border-radius: 18px;
-            }
-
-            h1 { font-size: 24px; }
-            .subtitle { font-size: 15px; }
-
-            /* 將表格轉為卡片佈局 */
-            table, thead, tbody, th, td, tr {
-                display: block;
-            }
-
-            thead {
-                display: none; /* 手機版隱藏標頭 */
-            }
-
+            table, thead, tbody, th, td, tr { display: block; }
+            thead { display: none; }
             tr {
                 margin-bottom: 20px;
                 border: 1px solid #eee;
@@ -176,55 +174,14 @@
                 background: white;
                 box-shadow: var(--card-shadow);
             }
-
-            td {
-                padding: 0 !important;
-                border-bottom: none !important;
-                width: 100% !important;
-            }
-
-            .section-name {
-                font-size: 12px;
-                text-transform: uppercase;
-                letter-spacing: 1px;
-                margin-bottom: 8px;
-            }
-
-            .text-segment {
-                font-size: 17px;
-                margin-bottom: 20px;
-                padding-right: 0;
-            }
-
-            .audio-cell {
-                margin-bottom: 20px;
-            }
-
-            audio {
-                width: 100%; /* 音檔撐滿寬度 */
-            }
-
-            .recall-cell {
-                border-top: 1px solid #f5f5f7;
-                padding-top: 15px !important;
-            }
-
-            .recall-buttons {
-                justify-content: space-between;
-                gap: 8px;
-            }
-
-            .recall-btn {
-                flex: 1; /* 按鈕平均分配寬度 */
-                height: 40px; /* 加大點擊範圍 */
-                font-size: 15px;
-            }
-
-            .status-text {
-                display: block;
-                text-align: center;
-                margin-top: 5px;
-            }
+            td { padding: 0 !important; border-bottom: none !important; width: 100% !important; }
+            .section-header { width: 100%; margin-bottom: 10px; justify-content: space-between; }
+            .text-segment { font-size: 17px; margin-bottom: 20px; }
+            .audio-cell { margin-bottom: 20px; }
+            audio { width: 100%; }
+            .recall-cell { border-top: 1px solid #f5f5f7; padding-top: 15px !important; }
+            .recall-buttons { justify-content: space-between; }
+            .recall-btn { flex: 1; height: 40px; }
         }
     </style>
 </head>
@@ -246,9 +203,7 @@
                     <th>Recall Level</th>
                 </tr>
             </thead>
-            <tbody id="speech-table">
-                <!-- 由 JavaScript 自動填充 -->
-            </tbody>
+            <tbody id="speech-table"></tbody>
         </table>
     </div>
 </div>
@@ -267,7 +222,7 @@
         { id: "College_03", section: "College 03", text: "After six months, I couldn't see the value in it. I had no idea what I wanted to do with my life and no idea how college was going to help me figure it out. And here I was spending all of the money my parents had saved their entire life." },
         { id: "College_04", section: "College 04", text: "So I decided to drop out and trust that it would all work out OK. It was pretty scary at the time, but looking back it was one of the best decisions I ever made." },
         { id: "College_05", section: "College 05", text: "The minute I dropped out I could stop taking the required classes that didn't interest me, and begin dropping in on the ones that looked interesting." },
-        { id: "College_06", section: "College 06", text: "It wasn't all romantic. I didn't have a dorm room, so I slept on the floor in friends' rooms, I returned coke bottles for the 5 cent deposits to buy food with, and I would walk the 7 miles across town every Sunday night to get one good meal a week at the Hare Krishna temple. I loved it." },
+        { id: "College_06", section: "College 06", text: "It wasn't all romantic. I didn't have a dorm room, so I slept on the floor in friends' rooms, I returned coke bottles for the 5 cent deposits to buy food with, and I would walk the 7 miles across town every Sunday night to get one good meal a week at the House of Krishna temple. I loved it." },
         { id: "College_07", section: "College 07", text: "And much of what I stumbled into by following my curiosity and intuition turned out to be priceless later on." },
         { id: "College_08", section: "College 08", text: "Let me give you one example: Reed College at that time offered perhaps the best calligraphy instruction in the country. Throughout the campus every poster, every label on every drawer, was beautifully hand calligraphed." },
         { id: "College_09", section: "College 09", text: "Because I had dropped out and didn't have to take the normal classes, I decided to take a calligraphy class to learn how to do this. I learned about serif and san serif typefaces, about varying the amount of space between different letter combinations, about what makes great typography great." },
@@ -326,8 +281,15 @@
             
             return `
                 <tr id="row-${item.id}" class="${masteredClass}">
-                    <td class="section-name">${item.section}</td>
-                    <td class="text-segment">${item.text}</td>
+                    <td>
+                        <div class="section-header">
+                            <span class="section-name">${item.section}</span>
+                            <button class="toggle-btn" onclick="toggleText('${item.id}')" title="隱藏/顯示文字">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                            </button>
+                        </div>
+                    </td>
+                    <td><div id="text-${item.id}" class="text-segment">${item.text}</div></td>
                     <td class="audio-cell">
                         <audio controls preload="none">
                             <source src="audio/${item.id}.mp3" type="audio/mpeg">
@@ -349,24 +311,26 @@
         }).join('');
     }
 
+    // 關鍵功能：切換文字模糊度
+    window.toggleText = function(id) {
+        const textElement = document.getElementById('text-' + id);
+        textElement.classList.toggle('hidden');
+    };
+
     window.updateRecall = function(id, score) {
         localStorage.setItem('recall-' + id, score);
         const row = document.getElementById('row-' + id);
-        
         if (score == 5) row.classList.add('mastered');
         else row.classList.remove('mastered');
-
         const buttons = row.querySelectorAll('.recall-btn');
         buttons.forEach(btn => {
             if (btn.innerText == score) btn.classList.add('active');
             else btn.classList.remove('active');
         });
-
         document.getElementById('status-' + id).innerText = 'Recall: ' + score + '/5';
     };
 
     document.addEventListener('DOMContentLoaded', renderTable);
 </script>
-
 </body>
 </html>
