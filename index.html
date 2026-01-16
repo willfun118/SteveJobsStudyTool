@@ -11,6 +11,7 @@
             --apple-text: #1d1d1f;
             --success-green: #e6fffa;
             --border-color: #d2d2d7;
+            --card-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
 
         body {
@@ -19,7 +20,8 @@
             color: var(--apple-text);
             margin: 0;
             padding: 40px 20px;
-            line-height: 1.5;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
         }
 
         .container {
@@ -27,8 +29,8 @@
             margin: 0 auto;
             background: white;
             padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.04);
         }
 
         header {
@@ -38,94 +40,101 @@
 
         h1 {
             font-size: 32px;
-            font-weight: 600;
-            margin-bottom: 10px;
+            font-weight: 700;
+            margin-bottom: 12px;
             letter-spacing: -0.5px;
-            color: #0071e3;
+            color: var(--apple-text);
         }
 
         .subtitle {
             color: #86868b;
             font-size: 18px;
+            font-weight: 400;
+        }
+
+        .table-wrapper {
+            margin-top: 30px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
         }
 
-        th {
+        /* 電腦版表格標頭 */
+        thead th {
             text-align: left;
             padding: 15px;
             border-bottom: 1px solid var(--border-color);
             color: #86868b;
-            font-weight: 500;
-            font-size: 14px;
+            font-weight: 600;
+            font-size: 13px;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         td {
-            padding: 20px 15px;
+            padding: 24px 15px;
             border-bottom: 1px solid #f2f2f2;
             vertical-align: top;
         }
 
         .section-name {
             font-weight: 600;
-            white-space: nowrap;
             width: 120px;
             color: var(--apple-blue);
+            font-size: 14px;
         }
 
         .text-segment {
             font-size: 16px;
             color: var(--apple-text);
-            padding-right: 30px;
-        }
-
-        .audio-player {
-            width: 100px;
+            padding-right: 20px;
         }
 
         audio {
-            height: 35px;
+            height: 36px;
             width: 200px;
-        }
-
-        .recall-cell {
-            width: 180px;
+            border-radius: 18px;
         }
 
         .recall-buttons {
             display: flex;
-            gap: 4px;
-            margin-bottom: 8px;
+            gap: 6px;
+            margin-bottom: 10px;
         }
 
         .recall-btn {
             border: 1px solid var(--border-color);
             background: white;
-            padding: 4px 10px;
-            border-radius: 6px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 12px;
-            transition: all 0.2s;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .recall-btn:hover {
             background: var(--apple-grey);
+            transform: translateY(-1px);
         }
 
         .recall-btn.active {
             background: var(--apple-blue);
             color: white;
             border-color: var(--apple-blue);
+            box-shadow: 0 4px 10px rgba(0, 113, 227, 0.3);
         }
 
         .status-text {
             font-size: 12px;
             color: #86868b;
+            font-weight: 500;
         }
 
         tr.mastered {
@@ -136,11 +145,86 @@
             background-color: #fafafa;
         }
 
-        @media (max-width: 768px) {
-            .container { padding: 20px; }
-            td, th { padding: 10px; }
-            .text-segment { font-size: 14px; }
-            audio { width: 150px; }
+        /* --- 響應式優化關鍵 (RWD) --- */
+        @media (max-width: 850px) {
+            body {
+                padding: 15px 10px;
+            }
+
+            .container {
+                padding: 25px 15px;
+                border-radius: 18px;
+            }
+
+            h1 { font-size: 24px; }
+            .subtitle { font-size: 15px; }
+
+            /* 將表格轉為卡片佈局 */
+            table, thead, tbody, th, td, tr {
+                display: block;
+            }
+
+            thead {
+                display: none; /* 手機版隱藏標頭 */
+            }
+
+            tr {
+                margin-bottom: 20px;
+                border: 1px solid #eee;
+                border-radius: 16px;
+                padding: 20px;
+                background: white;
+                box-shadow: var(--card-shadow);
+            }
+
+            td {
+                padding: 0 !important;
+                border-bottom: none !important;
+                width: 100% !important;
+            }
+
+            .section-name {
+                font-size: 12px;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                margin-bottom: 8px;
+            }
+
+            .text-segment {
+                font-size: 17px;
+                margin-bottom: 20px;
+                padding-right: 0;
+            }
+
+            .audio-cell {
+                margin-bottom: 20px;
+            }
+
+            audio {
+                width: 100%; /* 音檔撐滿寬度 */
+            }
+
+            .recall-cell {
+                border-top: 1px solid #f5f5f7;
+                padding-top: 15px !important;
+            }
+
+            .recall-buttons {
+                justify-content: space-between;
+                gap: 8px;
+            }
+
+            .recall-btn {
+                flex: 1; /* 按鈕平均分配寬度 */
+                height: 40px; /* 加大點擊範圍 */
+                font-size: 15px;
+            }
+
+            .status-text {
+                display: block;
+                text-align: center;
+                margin-top: 5px;
+            }
         }
     </style>
 </head>
@@ -148,23 +232,25 @@
 
 <div class="container">
     <header>
-        <h1>Steve Jobs' 2005 Stanford Commencement Address</h1>
-        <p class="subtitle">Stay Hungry, Stay Foolish. Study & Recall Tool.</p>
+        <h1>Steve Jobs' 2005 Stanford Address</h1>
+        <p class="subtitle">Stay Hungry, Stay Foolish. Study Tool.</p>
     </header>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Section</th>
-                <th>Transcript</th>
-                <th>Audio</th>
-                <th>Recall Level</th>
-            </tr>
-        </thead>
-        <tbody id="speech-table">
-            <!-- Content generated below -->
-        </tbody>
-    </table>
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Section</th>
+                    <th>Transcript</th>
+                    <th>Audio</th>
+                    <th>Recall Level</th>
+                </tr>
+            </thead>
+            <tbody id="speech-table">
+                <!-- 由 JavaScript 自動填充 -->
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <script>
@@ -255,7 +341,7 @@
                             `).join('')}
                         </div>
                         <span class="status-text" id="status-${item.id}">
-                            ${savedScore > 0 ? 'Current: ' + savedScore + '/5' : 'Not started'}
+                            ${savedScore > 0 ? 'Recall: ' + savedScore + '/5' : 'Not started'}
                         </span>
                     </td>
                 </tr>
@@ -264,32 +350,21 @@
     }
 
     window.updateRecall = function(id, score) {
-        // Save to localStorage
         localStorage.setItem('recall-' + id, score);
-        
-        // Update UI Row Color
         const row = document.getElementById('row-' + id);
-        if (score == 5) {
-            row.classList.add('mastered');
-        } else {
-            row.classList.remove('mastered');
-        }
+        
+        if (score == 5) row.classList.add('mastered');
+        else row.classList.remove('mastered');
 
-        // Update Buttons
         const buttons = row.querySelectorAll('.recall-btn');
         buttons.forEach(btn => {
-            if (btn.innerText == score) {
-                btn.classList.add('active');
-            } else {
-                btn.classList.remove('active');
-            }
+            if (btn.innerText == score) btn.classList.add('active');
+            else btn.classList.remove('active');
         });
 
-        // Update Status Text
-        document.getElementById('status-' + id).innerText = 'Current: ' + score + '/5';
+        document.getElementById('status-' + id).innerText = 'Recall: ' + score + '/5';
     };
 
-    // Initialize on load
     document.addEventListener('DOMContentLoaded', renderTable);
 </script>
 
