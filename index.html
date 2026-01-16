@@ -77,7 +77,6 @@
             vertical-align: top;
         }
 
-        /* 章節名稱與切換按鈕容器 */
         .section-header {
             display: flex;
             align-items: center;
@@ -91,8 +90,7 @@
             font-size: 14px;
         }
 
-        /* 隱藏/顯示按鈕樣式 */
-        .toggle-btn {
+        .toggle-btn, .loop-btn {
             background: none;
             border: none;
             cursor: pointer;
@@ -101,16 +99,21 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background 0.2s;
+            transition: all 0.2s;
             color: #86868b;
         }
 
-        .toggle-btn:hover {
+        .toggle-btn:hover, .loop-btn:hover {
             background: var(--apple-grey);
             color: var(--apple-blue);
         }
 
-        /* 文字片段樣式 */
+        /* 循環按鈕激活狀態 */
+        .loop-btn.active {
+            color: var(--apple-blue);
+            background: #e1f0ff;
+        }
+
         .text-segment {
             font-size: 16px;
             color: var(--apple-text);
@@ -118,7 +121,6 @@
             transition: filter 0.3s ease, opacity 0.3s ease;
         }
 
-        /* 隱藏狀態：使用模糊效果 (Apple 風格) */
         .text-segment.hidden {
             filter: blur(8px);
             opacity: 0.3;
@@ -126,9 +128,16 @@
             pointer-events: none;
         }
 
+        /* 音檔容器佈局 */
+        .audio-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         audio {
             height: 36px;
-            width: 200px;
+            width: 180px;
         }
 
         .recall-buttons {
@@ -162,7 +171,6 @@
             background-color: var(--success-green) !important;
         }
 
-        /* 手機版優化 */
         @media (max-width: 850px) {
             table, thead, tbody, th, td, tr { display: block; }
             thead { display: none; }
@@ -178,7 +186,8 @@
             .section-header { width: 100%; margin-bottom: 10px; justify-content: space-between; }
             .text-segment { font-size: 17px; margin-bottom: 20px; }
             .audio-cell { margin-bottom: 20px; }
-            audio { width: 100%; }
+            .audio-container { width: 100%; justify-content: space-between; }
+            audio { flex-grow: 1; }
             .recall-cell { border-top: 1px solid #f5f5f7; padding-top: 15px !important; }
             .recall-buttons { justify-content: space-between; }
             .recall-btn { flex: 1; height: 40px; }
@@ -291,9 +300,14 @@
                     </td>
                     <td><div id="text-${item.id}" class="text-segment">${item.text}</div></td>
                     <td class="audio-cell">
-                        <audio controls preload="none">
-                            <source src="audio/${item.id}.mp3" type="audio/mpeg">
-                        </audio>
+                        <div class="audio-container">
+                            <audio id="audio-${item.id}" controls preload="none">
+                                <source src="audio/${item.id}.mp3" type="audio/mpeg">
+                            </audio>
+                            <button id="loop-${item.id}" class="loop-btn" onclick="toggleLoop('${item.id}')" title="單曲循環">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
+                            </button>
+                        </div>
                     </td>
                     <td class="recall-cell">
                         <div class="recall-buttons">
@@ -311,10 +325,25 @@
         }).join('');
     }
 
-    // 關鍵功能：切換文字模糊度
+    // 切換文字模糊度
     window.toggleText = function(id) {
         const textElement = document.getElementById('text-' + id);
         textElement.classList.toggle('hidden');
+    };
+
+    // 切換循環播放功能
+    window.toggleLoop = function(id) {
+        const audio = document.getElementById('audio-' + id);
+        const loopBtn = document.getElementById('loop-' + id);
+        
+        audio.loop = !audio.loop; // 切換 audio 的 loop 屬性
+        loopBtn.classList.toggle('active'); // 切換按鈕樣式
+        
+        if (audio.loop) {
+            loopBtn.title = "取消循環";
+        } else {
+            loopBtn.title = "單曲循環";
+        }
     };
 
     window.updateRecall = function(id, score) {
